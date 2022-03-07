@@ -1,0 +1,599 @@
+{
+  "apiVersion": "v1",
+  "items": [
+    {
+      "apiVersion": "zookeeper.pravega.io/v1beta1",
+      "kind": "ZookeeperCluster",
+      "metadata": {
+        "creationTimestamp": "2022-01-14T08:14:38Z",
+        "generation": 4,
+        "managedFields": [
+          {
+            "apiVersion": "zookeeper.pravega.io/v1beta1",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:spec": {}
+            },
+            "manager": "kubectl-create",
+            "operation": "Update",
+            "time": "2022-01-14T08:14:38Z"
+          },
+          {
+            "apiVersion": "zookeeper.pravega.io/v1beta1",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:spec": {
+                "f:adminServerService": {},
+                "f:clientService": {},
+                "f:config": {
+                  ".": {},
+                  "f:autoPurgePurgeInterval": {},
+                  "f:autoPurgeSnapRetainCount": {},
+                  "f:commitLogCount": {},
+                  "f:globalOutstandingLimit": {},
+                  "f:initLimit": {},
+                  "f:maxClientCnxns": {},
+                  "f:maxSessionTimeout": {},
+                  "f:minSessionTimeout": {},
+                  "f:preAllocSize": {},
+                  "f:snapCount": {},
+                  "f:snapSizeLimitInKb": {},
+                  "f:syncLimit": {},
+                  "f:tickTime": {}
+                },
+                "f:headlessService": {},
+                "f:image": {
+                  ".": {},
+                  "f:pullPolicy": {},
+                  "f:repository": {},
+                  "f:tag": {}
+                },
+                "f:labels": {
+                  ".": {},
+                  "f:app": {},
+                  "f:owner-rv": {},
+                  "f:release": {}
+                },
+                "f:persistence": {
+                  ".": {},
+                  "f:reclaimPolicy": {},
+                  "f:spec": {
+                    ".": {},
+                    "f:accessModes": {},
+                    "f:resources": {
+                      ".": {},
+                      "f:requests": {
+                        ".": {},
+                        "f:storage": {}
+                      }
+                    }
+                  }
+                },
+                "f:pod": {
+                  ".": {},
+                  "f:affinity": {
+                    ".": {},
+                    "f:podAntiAffinity": {
+                      ".": {},
+                      "f:preferredDuringSchedulingIgnoredDuringExecution": {}
+                    }
+                  },
+                  "f:labels": {
+                    ".": {},
+                    "f:app": {},
+                    "f:release": {}
+                  },
+                  "f:resources": {},
+                  "f:serviceAccountName": {},
+                  "f:terminationGracePeriodSeconds": {}
+                },
+                "f:ports": {},
+                "f:probes": {
+                  ".": {},
+                  "f:livenessProbe": {
+                    ".": {},
+                    "f:failureThreshold": {},
+                    "f:initialDelaySeconds": {},
+                    "f:periodSeconds": {},
+                    "f:successThreshold": {},
+                    "f:timeoutSeconds": {}
+                  },
+                  "f:readinessProbe": {
+                    ".": {},
+                    "f:failureThreshold": {},
+                    "f:initialDelaySeconds": {},
+                    "f:periodSeconds": {},
+                    "f:successThreshold": {},
+                    "f:timeoutSeconds": {}
+                  }
+                },
+                "f:storageType": {}
+              },
+              "f:status": {
+                ".": {},
+                "f:conditions": {},
+                "f:currentVersion": {},
+                "f:externalClientEndpoint": {},
+                "f:internalClientEndpoint": {},
+                "f:members": {
+                  ".": {},
+                  "f:ready": {}
+                },
+                "f:metaRootCreated": {},
+                "f:readyReplicas": {},
+                "f:replicas": {}
+              }
+            },
+            "manager": "zookeeper-operator",
+            "operation": "Update",
+            "time": "2022-02-10T05:09:41Z"
+          },
+          {
+            "apiVersion": "zookeeper.pravega.io/v1beta1",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:spec": {
+                "f:replicas": {}
+              }
+            },
+            "manager": "curl",
+            "operation": "Update",
+            "time": "2022-02-11T08:15:23Z"
+          }
+        ],
+        "name": "zookeeper",
+        "namespace": "default",
+        "resourceVersion": "117559704",
+        "selfLink": "/apis/zookeeper.pravega.io/v1beta1/namespaces/default/zookeeperclusters/zookeeper",
+        "uid": "b952ffaf-f285-4746-a423-8b6bdbd90fb6"
+      },
+      "spec": {
+        "adminServerService": {},
+        "clientService": {},
+        "config": {
+          "autoPurgePurgeInterval": 1,
+          "autoPurgeSnapRetainCount": 3,
+          "commitLogCount": 500,
+          "globalOutstandingLimit": 1000,
+          "initLimit": 10,
+          "maxClientCnxns": 60,
+          "maxSessionTimeout": 40000,
+          "minSessionTimeout": 4000,
+          "preAllocSize": 65536,
+          "snapCount": 10000,
+          "snapSizeLimitInKb": 4194304,
+          "syncLimit": 2,
+          "tickTime": 2000
+        },
+        "headlessService": {},
+        "image": {
+          "pullPolicy": "Always",
+          "repository": "pravega/zookeeper",
+          "tag": "0.2.12"
+        },
+        "labels": {
+          "app": "zookeeper",
+          "release": "zookeeper"
+        },
+        "persistence": {
+          "reclaimPolicy": "Retain",
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "resources": {
+              "requests": {
+                "storage": "20Gi"
+              }
+            }
+          }
+        },
+        "pod": {
+          "affinity": {
+            "podAntiAffinity": {
+              "preferredDuringSchedulingIgnoredDuringExecution": [
+                {
+                  "podAffinityTerm": {
+                    "labelSelector": {
+                      "matchExpressions": [
+                        {
+                          "key": "app",
+                          "operator": "In",
+                          "values": [
+                            "zookeeper"
+                          ]
+                        }
+                      ]
+                    },
+                    "topologyKey": "kubernetes.io/hostname"
+                  },
+                  "weight": 20
+                }
+              ]
+            }
+          },
+          "labels": {
+            "app": "zookeeper",
+            "release": "zookeeper"
+          },
+          "resources": {},
+          "serviceAccountName": "default",
+          "terminationGracePeriodSeconds": 30
+        },
+        "ports": [
+          {
+            "containerPort": 2181,
+            "name": "client"
+          },
+          {
+            "containerPort": 2888,
+            "name": "quorum"
+          },
+          {
+            "containerPort": 3888,
+            "name": "leader-election"
+          },
+          {
+            "containerPort": 7000,
+            "name": "metrics"
+          },
+          {
+            "containerPort": 8080,
+            "name": "admin-server"
+          }
+        ],
+        "probes": {
+          "livenessProbe": {
+            "failureThreshold": 3,
+            "initialDelaySeconds": 10,
+            "periodSeconds": 10,
+            "successThreshold": 0,
+            "timeoutSeconds": 10
+          },
+          "readinessProbe": {
+            "failureThreshold": 3,
+            "initialDelaySeconds": 10,
+            "periodSeconds": 10,
+            "successThreshold": 1,
+            "timeoutSeconds": 10
+          }
+        },
+        "replicas": 3,
+        "storageType": "persistence"
+      },
+      "status": {
+        "conditions": [
+          {
+            "lastTransitionTime": "2022-02-16T08:30:59Z",
+            "lastUpdateTime": "2022-02-16T08:30:59Z",
+            "status": "True",
+            "type": "PodsReady"
+          },
+          {
+            "status": "False",
+            "type": "Upgrading"
+          },
+          {
+            "status": "False",
+            "type": "Error"
+          }
+        ],
+        "currentVersion": "0.2.12",
+        "externalClientEndpoint": "N/A",
+        "internalClientEndpoint": "10.238.18.48:2181",
+        "members": {
+          "ready": [
+            "zookeeper-0",
+            "zookeeper-1",
+            "zookeeper-2"
+          ]
+        },
+        "metaRootCreated": true,
+        "readyReplicas": 3,
+        "replicas": 3
+      }
+    },
+    {
+      "apiVersion": "zookeeper.pravega.io/v1beta1",
+      "kind": "ZookeeperCluster",
+      "metadata": {
+        "creationTimestamp": "2022-03-03T11:51:16Z",
+        "finalizers": [
+          "cleanUpZookeeperPVC"
+        ],
+        "generation": 2,
+        "managedFields": [
+          {
+            "apiVersion": "zookeeper.pravega.io/v1beta1",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:spec": {
+                ".": {},
+                "f:image": {
+                  ".": {},
+                  "f:repository": {},
+                  "f:tag": {}
+                },
+                "f:persistence": {
+                  ".": {},
+                  "f:reclaimPolicy": {},
+                  "f:spec": {
+                    ".": {},
+                    "f:resources": {
+                      ".": {},
+                      "f:requests": {
+                        ".": {},
+                        "f:storage": {}
+                      }
+                    },
+                    "f:storageClassName": {}
+                  }
+                },
+                "f:replicas": {},
+                "f:storageType": {}
+              }
+            },
+            "manager": "kubectl-create",
+            "operation": "Update",
+            "time": "2022-03-03T11:51:16Z"
+          },
+          {
+            "apiVersion": "zookeeper.pravega.io/v1beta1",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:finalizers": {}
+              },
+              "f:spec": {
+                "f:adminServerService": {},
+                "f:clientService": {},
+                "f:config": {
+                  ".": {},
+                  "f:autoPurgePurgeInterval": {},
+                  "f:autoPurgeSnapRetainCount": {},
+                  "f:commitLogCount": {},
+                  "f:globalOutstandingLimit": {},
+                  "f:initLimit": {},
+                  "f:maxClientCnxns": {},
+                  "f:maxSessionTimeout": {},
+                  "f:minSessionTimeout": {},
+                  "f:preAllocSize": {},
+                  "f:snapCount": {},
+                  "f:snapSizeLimitInKb": {},
+                  "f:syncLimit": {},
+                  "f:tickTime": {}
+                },
+                "f:headlessService": {},
+                "f:image": {
+                  "f:pullPolicy": {}
+                },
+                "f:labels": {
+                  ".": {},
+                  "f:app": {},
+                  "f:owner-rv": {},
+                  "f:release": {}
+                },
+                "f:persistence": {
+                  "f:spec": {
+                    "f:accessModes": {}
+                  }
+                },
+                "f:pod": {
+                  ".": {},
+                  "f:affinity": {
+                    ".": {},
+                    "f:podAntiAffinity": {
+                      ".": {},
+                      "f:preferredDuringSchedulingIgnoredDuringExecution": {}
+                    }
+                  },
+                  "f:labels": {
+                    ".": {},
+                    "f:app": {},
+                    "f:release": {}
+                  },
+                  "f:resources": {},
+                  "f:serviceAccountName": {},
+                  "f:terminationGracePeriodSeconds": {}
+                },
+                "f:ports": {},
+                "f:probes": {
+                  ".": {},
+                  "f:livenessProbe": {
+                    ".": {},
+                    "f:failureThreshold": {},
+                    "f:initialDelaySeconds": {},
+                    "f:periodSeconds": {},
+                    "f:successThreshold": {},
+                    "f:timeoutSeconds": {}
+                  },
+                  "f:readinessProbe": {
+                    ".": {},
+                    "f:failureThreshold": {},
+                    "f:initialDelaySeconds": {},
+                    "f:periodSeconds": {},
+                    "f:successThreshold": {},
+                    "f:timeoutSeconds": {}
+                  }
+                }
+              },
+              "f:status": {
+                ".": {},
+                "f:conditions": {},
+                "f:currentVersion": {},
+                "f:externalClientEndpoint": {},
+                "f:internalClientEndpoint": {},
+                "f:members": {
+                  ".": {},
+                  "f:ready": {}
+                },
+                "f:metaRootCreated": {},
+                "f:readyReplicas": {},
+                "f:replicas": {}
+              }
+            },
+            "manager": "zookeeper-operator",
+            "operation": "Update",
+            "time": "2022-03-03T11:56:19Z"
+          }
+        ],
+        "name": "zookeeper-the-other",
+        "namespace": "default",
+        "resourceVersion": "117559769",
+        "selfLink": "/apis/zookeeper.pravega.io/v1beta1/namespaces/default/zookeeperclusters/zookeeper-the-other",
+        "uid": "cf6f8af8-f10d-46b5-a4ed-0dfc90d3a48b"
+      },
+      "spec": {
+        "adminServerService": {},
+        "clientService": {},
+        "config": {
+          "autoPurgePurgeInterval": 1,
+          "autoPurgeSnapRetainCount": 3,
+          "commitLogCount": 500,
+          "globalOutstandingLimit": 1000,
+          "initLimit": 10,
+          "maxClientCnxns": 60,
+          "maxSessionTimeout": 40000,
+          "minSessionTimeout": 4000,
+          "preAllocSize": 65536,
+          "snapCount": 10000,
+          "snapSizeLimitInKb": 4194304,
+          "syncLimit": 2,
+          "tickTime": 2000
+        },
+        "headlessService": {},
+        "image": {
+          "pullPolicy": "Always",
+          "repository": "pravega/zookeeper",
+          "tag": "0.2.13"
+        },
+        "labels": {
+          "app": "zookeeper-the-other",
+          "release": "zookeeper-the-other"
+        },
+        "persistence": {
+          "reclaimPolicy": "Delete",
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "resources": {
+              "requests": {
+                "storage": "20Gi"
+              }
+            },
+            "storageClassName": "cloud-nfs"
+          }
+        },
+        "pod": {
+          "affinity": {
+            "podAntiAffinity": {
+              "preferredDuringSchedulingIgnoredDuringExecution": [
+                {
+                  "podAffinityTerm": {
+                    "labelSelector": {
+                      "matchExpressions": [
+                        {
+                          "key": "app",
+                          "operator": "In",
+                          "values": [
+                            "zookeeper-the-other"
+                          ]
+                        }
+                      ]
+                    },
+                    "topologyKey": "kubernetes.io/hostname"
+                  },
+                  "weight": 20
+                }
+              ]
+            }
+          },
+          "labels": {
+            "app": "zookeeper-the-other",
+            "release": "zookeeper-the-other"
+          },
+          "resources": {},
+          "serviceAccountName": "default",
+          "terminationGracePeriodSeconds": 30
+        },
+        "ports": [
+          {
+            "containerPort": 2181,
+            "name": "client"
+          },
+          {
+            "containerPort": 2888,
+            "name": "quorum"
+          },
+          {
+            "containerPort": 3888,
+            "name": "leader-election"
+          },
+          {
+            "containerPort": 7000,
+            "name": "metrics"
+          },
+          {
+            "containerPort": 8080,
+            "name": "admin-server"
+          }
+        ],
+        "probes": {
+          "livenessProbe": {
+            "failureThreshold": 3,
+            "initialDelaySeconds": 10,
+            "periodSeconds": 10,
+            "successThreshold": 0,
+            "timeoutSeconds": 10
+          },
+          "readinessProbe": {
+            "failureThreshold": 3,
+            "initialDelaySeconds": 10,
+            "periodSeconds": 10,
+            "successThreshold": 1,
+            "timeoutSeconds": 10
+          }
+        },
+        "replicas": 3,
+        "storageType": "persistence"
+      },
+      "status": {
+        "conditions": [
+          {
+            "lastTransitionTime": "2022-03-03T11:56:19Z",
+            "lastUpdateTime": "2022-03-03T11:56:19Z",
+            "status": "True",
+            "type": "PodsReady"
+          },
+          {
+            "status": "False",
+            "type": "Upgrading"
+          },
+          {
+            "status": "False",
+            "type": "Error"
+          }
+        ],
+        "currentVersion": "0.2.13",
+        "externalClientEndpoint": "N/A",
+        "internalClientEndpoint": "10.238.18.189:2181",
+        "members": {
+          "ready": [
+            "zookeeper-the-other-2",
+            "zookeeper-the-other-1",
+            "zookeeper-the-other-0"
+          ]
+        },
+        "metaRootCreated": true,
+        "readyReplicas": 3,
+        "replicas": 3
+      }
+    }
+  ],
+  "kind": "List",
+  "metadata": {
+    "resourceVersion": "",
+    "selfLink": ""
+  }
+}
