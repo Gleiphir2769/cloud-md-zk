@@ -4,6 +4,7 @@ import (
 	"cloud-md-zk/util"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 )
 
 type ZKClusterStatus struct {
@@ -18,13 +19,12 @@ func DeleteZKCluster(clusterName string) error {
 }
 
 func GetZKClusterInfo(clusterName string) error {
-	resp, err := util.HTTPGet(fmt.Sprintf("http://10.238.18.138:8081/apis/zookeeper.pravega.io/v1beta1/namespaces/default/zookeeperclusters/%s", clusterName), nil, nil)
+	resp, err := util.HTTPGet(fmt.Sprintf("http://localhost:8081/apis/zookeeper.pravega.io/v1beta1/namespaces/default/zookeeperclusters/%s", clusterName), nil, nil)
 	if err != nil {
 		return err
 	}
-	var buf []byte
 	defer resp.Body.Close()
-	_, err = resp.Body.Read(buf)
+	buf, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
