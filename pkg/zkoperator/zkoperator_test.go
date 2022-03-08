@@ -23,6 +23,8 @@ func TestCreateDefaultZKCluster(t *testing.T) {
 	} else {
 		fmt.Println(info.Spec.Config)
 	}
+	//buf, _ := json.Marshal(DefaultCR("zookeeper-test"))
+	//fmt.Println(string(buf))
 }
 
 //func TestDeleteZKCluster(t *testing.T) {

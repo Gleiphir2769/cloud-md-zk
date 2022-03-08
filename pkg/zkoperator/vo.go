@@ -188,7 +188,19 @@ func DefaultConfig() *ZKClusterConfig {
 		CPU:    "200m",
 		Memory: "256Mi",
 		Volume: "20Gi",
-		Config: ZKClusterSubConfig{},
+		Config: ZKClusterSubConfig{1,
+			3,
+			500,
+			1000,
+			10,
+			60,
+			40000,
+			4000,
+			65536,
+			10000,
+			4194304,
+			2,
+			2000},
 	}
 }
 
@@ -224,7 +236,7 @@ func DefaultCR(clusterName string) *ZKClusterCR {
 					Limits: PodResourceLimit{},
 				},
 			},
-			Config: ZKClusterSubConfig{},
+			Config: DefaultConfig().Config,
 		},
 	}
 }
