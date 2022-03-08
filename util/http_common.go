@@ -47,7 +47,7 @@ func HTTPPut(url string, body interface{}, params map[string]string, headers map
 }
 
 func HTTPRequestWithoutBody(uri string, params map[string]string, headers map[string]string, auth *Auth, method string) (*http.Response, error) {
-	req, err := http.NewRequest(http.MethodGet, uri, nil)
+	req, err := http.NewRequest(method, uri, nil)
 
 	if err != nil {
 		log.Println(err)
