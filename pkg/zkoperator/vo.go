@@ -3,25 +3,27 @@ package zkoperator
 import "time"
 
 type ZKClusterConfig struct {
-	Size   int    `json:"size"`
-	CPU    string `json:"cpu"`
-	Memory string `json:"memory"`
-	Volume string `json:"volume"`
-	Config struct {
-		AutoPurgePurgeInterval   int `json:"autoPurgePurgeInterval"`
-		AutoPurgeSnapRetainCount int `json:"autoPurgeSnapRetainCount"`
-		CommitLogCount           int `json:"commitLogCount"`
-		GlobalOutstandingLimit   int `json:"globalOutstandingLimit"`
-		InitLimit                int `json:"initLimit"`
-		MaxClientCnxns           int `json:"maxClientCnxns"`
-		MaxSessionTimeout        int `json:"maxSessionTimeout"`
-		MinSessionTimeout        int `json:"minSessionTimeout"`
-		PreAllocSize             int `json:"preAllocSize"`
-		SnapCount                int `json:"snapCount"`
-		SnapSizeLimitInKb        int `json:"snapSizeLimitInKb"`
-		SyncLimit                int `json:"syncLimit"`
-		TickTime                 int `json:"tickTime"`
-	} `json:"config"`
+	Size   int                `json:"size"`
+	CPU    string             `json:"cpu"`
+	Memory string             `json:"memory"`
+	Volume string             `json:"volume"`
+	Config ZKClusterSubConfig `json:"config"`
+}
+
+type ZKClusterSubConfig struct {
+	AutoPurgePurgeInterval   int `json:"autoPurgePurgeInterval"`
+	AutoPurgeSnapRetainCount int `json:"autoPurgeSnapRetainCount"`
+	CommitLogCount           int `json:"commitLogCount"`
+	GlobalOutstandingLimit   int `json:"globalOutstandingLimit"`
+	InitLimit                int `json:"initLimit"`
+	MaxClientCnxns           int `json:"maxClientCnxns"`
+	MaxSessionTimeout        int `json:"maxSessionTimeout"`
+	MinSessionTimeout        int `json:"minSessionTimeout"`
+	PreAllocSize             int `json:"preAllocSize"`
+	SnapCount                int `json:"snapCount"`
+	SnapSizeLimitInKb        int `json:"snapSizeLimitInKb"`
+	SyncLimit                int `json:"syncLimit"`
+	TickTime                 int `json:"tickTime"`
 }
 
 type ZKClusterPodInfo struct {
@@ -46,21 +48,7 @@ type ZKClusterPodInfo struct {
 		} `json:"adminServerService"`
 		ClientService struct {
 		} `json:"clientService"`
-		Config struct {
-			AutoPurgePurgeInterval   int `json:"autoPurgePurgeInterval"`
-			AutoPurgeSnapRetainCount int `json:"autoPurgeSnapRetainCount"`
-			CommitLogCount           int `json:"commitLogCount"`
-			GlobalOutstandingLimit   int `json:"globalOutstandingLimit"`
-			InitLimit                int `json:"initLimit"`
-			MaxClientCnxns           int `json:"maxClientCnxns"`
-			MaxSessionTimeout        int `json:"maxSessionTimeout"`
-			MinSessionTimeout        int `json:"minSessionTimeout"`
-			PreAllocSize             int `json:"preAllocSize"`
-			SnapCount                int `json:"snapCount"`
-			SnapSizeLimitInKb        int `json:"snapSizeLimitInKb"`
-			SyncLimit                int `json:"syncLimit"`
-			TickTime                 int `json:"tickTime"`
-		} `json:"config"`
+		Config          ZKClusterSubConfig `json:"config"`
 		HeadlessService struct {
 		} `json:"headlessService"`
 		Image struct {
@@ -124,4 +112,119 @@ type ZKClusterPodInfo struct {
 		ReadyReplicas   int  `json:"readyReplicas"`
 		Replicas        int  `json:"replicas"`
 	} `json:"status"`
+}
+
+type ZKClusterCR struct {
+	APIVersion string              `yaml:"apiVersion"`
+	Kind       string              `yaml:"kind"`
+	Metadata   ZKClusterCRMetadata `yaml:"metadata"`
+	Spec       ZKClusterCRSpec     `yaml:"spec"`
+}
+
+type ZKClusterCRMetadata struct {
+	Name string `yaml:"name"`
+}
+
+type ZKClusterCRSpec struct {
+	Replicas    int                `yaml:"replicas"`
+	Image       ImageConfig        `yaml:"image"`
+	StorageType string             `yaml:"storageType"`
+	Persistence PersistentConfig   `yaml:"persistence"`
+	Pod         PodConfig          `yaml:"pod"`
+	Config      ZKClusterSubConfig `yaml:"config"`
+}
+
+type ImageConfig struct {
+	Repository string `yaml:"repository"`
+	Tag        string `yaml:"tag"`
+}
+
+type PersistentConfig struct {
+	ReclaimPolicy string         `yaml:"reclaimPolicy"`
+	Spec          PersistentSpec `yaml:"spec"`
+}
+
+type PersistentSpec struct {
+	StorageClassName string              `yaml:"storageClassName"`
+	Resources        PersistentResources `yaml:"resources"`
+}
+
+type PersistentResources struct {
+	Requests PersistentResourceRequest `yaml:"requests"`
+	Limits   PersistentResourceLimit   `yaml:"limits"`
+}
+
+type PersistentResourceRequest struct {
+	Storage string `yaml:"storage"`
+}
+
+type PersistentResourceLimit struct {
+	Storage string `yaml:"storage"`
+}
+
+type PodConfig struct {
+	ServiceAccountName string       `yaml:"serviceAccountName"`
+	Resources          PodResources `yaml:"resources"`
+}
+
+type PodResources struct {
+	Requests PodResourceRequest `yaml:"requests"`
+	Limits   PodResourceLimit   `yaml:"limits"`
+}
+
+type PodResourceRequest struct {
+	CPU    string `yaml:"cpu"`
+	Memory string `yaml:"memory"`
+}
+
+type PodResourceLimit struct {
+	CPU    string `yaml:"cpu"`
+	Memory string `yaml:"memory"`
+}
+
+func DefaultConfig() *ZKClusterConfig {
+	return &ZKClusterConfig{
+		Size:   3,
+		CPU:    "200m",
+		Memory: "256Mi",
+		Volume: "20Gi",
+		Config: ZKClusterSubConfig{},
+	}
+}
+
+func DefaultCR(clusterName string) *ZKClusterCR {
+	return &ZKClusterCR{
+		APIVersion: "zookeeper.pravega.io/v1beta1",
+		Kind:       "ZookeeperCluster",
+		Metadata:   ZKClusterCRMetadata{Name: clusterName},
+		Spec: ZKClusterCRSpec{
+			Replicas: 3,
+			Image: ImageConfig{
+				Repository: "pravega/zookeeper",
+				Tag:        "0.2.13",
+			},
+			StorageType: "persistence",
+			Persistence: PersistentConfig{
+				ReclaimPolicy: "Delete",
+				Spec: PersistentSpec{
+					StorageClassName: "cloud-nfs",
+					Resources: PersistentResources{
+						Requests: PersistentResourceRequest{Storage: "20Gi"},
+						Limits:   PersistentResourceLimit{},
+					},
+				},
+			},
+			Pod: PodConfig{
+				ServiceAccountName: "zookeeper",
+				Resources: PodResources{
+					Requests: PodResourceRequest{
+						CPU:    "200m",
+						Memory: "256Mi",
+					},
+					Limits: PodResourceLimit{},
+				},
+			},
+			Config: ZKClusterSubConfig{},
+		},
+	}
 }

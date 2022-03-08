@@ -19,18 +19,46 @@ func CreateZKCluster(clusterName string, config *ZKClusterConfig) (*ZKClusterSta
 	return &ZKClusterStatus{}, nil
 }
 
+func CreateDefaultZKCluster(clusterName string) (*ZKClusterPodInfo, error) {
+	cr := DefaultCR(clusterName)
+	resp, err := util.HTTPPut(urlJoin(api, clusterName), &cr, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("delete zk cluster failed, status code: %d", resp.StatusCode)
+	}
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			logger.GetLog().Error(err.Error())
+		}
+	}(resp.Body)
+	buf, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	info := &ZKClusterPodInfo{}
+	err = json.Unmarshal(buf, info)
+	if err != nil {
+		return nil, err
+	}
+	return info, nil
+}
+
 func DeleteZKCluster(clusterName string) error {
 	resp, err := util.HTTPDelete(urlJoin(api, clusterName), nil, nil)
 	if err != nil {
 		return err
 	}
-	fmt.Println("Code: ", resp.StatusCode)
+	if resp.StatusCode == 200 {
+		return nil
+	}
 	buf, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return fmt.Errorf("delete zk cluster failed, status code: %d, reason: %s", resp.StatusCode, err)
 	}
-	fmt.Println("Body: ", string(buf))
-	return nil
+	return fmt.Errorf("delete zk cluster failed, status code: %d, reason: %s", resp.StatusCode, string(buf))
 }
 
 func GetZKClusterInfo(clusterName string) (*ZKClusterPodInfo, error) {
