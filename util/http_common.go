@@ -90,7 +90,7 @@ func HTTPRequestWithBody(url string, body interface{}, params map[string]string,
 		}
 	}
 
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(bodyJSON))
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(bodyJSON))
 
 	if err != nil {
 		log.Println(err)

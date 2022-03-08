@@ -25,9 +25,7 @@ func CreateDefaultZKCluster(clusterName string) (*ZKClusterPodInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("craete zk cluster failed, status code: %d", resp.StatusCode)
-	}
+
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
 		if err != nil {
@@ -38,6 +36,11 @@ func CreateDefaultZKCluster(clusterName string) (*ZKClusterPodInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("craete zk cluster failed, status code: %d, reason: %s", resp.StatusCode, string(buf))
+	}
+
 	info := &ZKClusterPodInfo{}
 	err = json.Unmarshal(buf, info)
 	if err != nil {
