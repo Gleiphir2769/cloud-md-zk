@@ -31,10 +31,22 @@ func NewAuth(username, password string) *Auth {
 }
 
 func HTTPGet(uri string, params map[string]string, headers map[string]string) (*http.Response, error) {
-	return HTTPGetBasicAuth(uri, params, headers, nil)
+	return HTTPRequestWithoutBody(uri, params, headers, nil, http.MethodGet)
 }
 
-func HTTPGetBasicAuth(uri string, params map[string]string, headers map[string]string, auth *Auth) (*http.Response, error) {
+func HTTPDelete(uri string, params map[string]string, headers map[string]string) (*http.Response, error) {
+	return HTTPRequestWithoutBody(uri, params, headers, nil, http.MethodDelete)
+}
+
+func HTTPPost(url string, body interface{}, params map[string]string, headers map[string]string) (*http.Response, error) {
+	return HTTPRequestWithBody(url, body, params, headers, http.MethodPost)
+}
+
+func HTTPPut(url string, body interface{}, params map[string]string, headers map[string]string) (*http.Response, error) {
+	return HTTPRequestWithBody(url, body, params, headers, http.MethodPut)
+}
+
+func HTTPRequestWithoutBody(uri string, params map[string]string, headers map[string]string, auth *Auth, method string) (*http.Response, error) {
 	req, err := http.NewRequest(http.MethodGet, uri, nil)
 
 	if err != nil {
@@ -66,7 +78,7 @@ func HTTPGetBasicAuth(uri string, params map[string]string, headers map[string]s
 	return client.Do(req)
 }
 
-func HTTPPost(url string, body interface{}, params map[string]string, headers map[string]string, client *http.Client) (*http.Response, error) {
+func HTTPRequestWithBody(url string, body interface{}, params map[string]string, headers map[string]string, method string) (*http.Response, error) {
 	var bodyJSON []byte
 	var req *http.Request
 	if body != nil {
@@ -100,7 +112,7 @@ func HTTPPost(url string, body interface{}, params map[string]string, headers ma
 			req.Header.Add(key, val)
 		}
 	}
-
+	client := NewClient(time.Duration(TIMEOUT) * time.Second)
 	return client.Do(req)
 }
 
