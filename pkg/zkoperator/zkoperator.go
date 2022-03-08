@@ -21,7 +21,7 @@ func CreateZKCluster(clusterName string, config *ZKClusterConfig) (*ZKClusterSta
 
 func CreateDefaultZKCluster(clusterName string) (*ZKClusterPodInfo, error) {
 	cr := DefaultCR(clusterName)
-	resp, err := util.HTTPPut(urlJoin(api, clusterName), &cr, nil, nil)
+	resp, err := util.HTTPPut(api, &cr, nil, nil)
 	if err != nil {
 		return nil, err
 	}
