@@ -21,12 +21,12 @@ func CreateZKCluster(clusterName string, config *ZKClusterConfig) (*ZKClusterSta
 
 func CreateDefaultZKCluster(clusterName string) (*ZKClusterPodInfo, error) {
 	cr := DefaultCR(clusterName)
-	resp, err := util.HTTPPut(api, &cr, nil, nil)
+	resp, err := util.HTTPPost(api, &cr, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("delete zk cluster failed, status code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("craete zk cluster failed, status code: %d", resp.StatusCode)
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
