@@ -115,10 +115,10 @@ type ZKClusterPodInfo struct {
 }
 
 type ZKClusterCR struct {
-	APIVersion string              `yaml:"apiVersion"`
-	Kind       string              `yaml:"kind"`
-	Metadata   ZKClusterCRMetadata `yaml:"metadata"`
-	Spec       ZKClusterCRSpec     `yaml:"spec"`
+	APIVersion string              `json:"apiVersion"`
+	Kind       string              `json:"kind"`
+	Metadata   ZKClusterCRMetadata `json:"metadata"`
+	Spec       ZKClusterCRSpec     `json:"spec"`
 }
 
 type ZKClusterCRMetadata struct {
@@ -126,60 +126,60 @@ type ZKClusterCRMetadata struct {
 }
 
 type ZKClusterCRSpec struct {
-	Replicas    int                `yaml:"replicas"`
-	Image       ImageConfig        `yaml:"image"`
-	StorageType string             `yaml:"storageType"`
-	Persistence PersistentConfig   `yaml:"persistence"`
-	Pod         PodConfig          `yaml:"pod"`
-	Config      ZKClusterSubConfig `yaml:"config"`
+	Replicas    int                `json:"replicas"`
+	Image       ImageConfig        `json:"image"`
+	StorageType string             `json:"storageType"`
+	Persistence PersistentConfig   `json:"persistence"`
+	Pod         PodConfig          `json:"pod"`
+	Config      ZKClusterSubConfig `json:"config"`
 }
 
 type ImageConfig struct {
-	Repository string `yaml:"repository"`
-	Tag        string `yaml:"tag"`
+	Repository string `json:"repository"`
+	Tag        string `json:"tag"`
 }
 
 type PersistentConfig struct {
-	ReclaimPolicy string         `yaml:"reclaimPolicy"`
-	Spec          PersistentSpec `yaml:"spec"`
+	ReclaimPolicy string         `json:"reclaimPolicy"`
+	Spec          PersistentSpec `json:"spec"`
 }
 
 type PersistentSpec struct {
-	StorageClassName string              `yaml:"storageClassName"`
-	Resources        PersistentResources `yaml:"resources"`
+	StorageClassName string              `json:"storageClassName"`
+	Resources        PersistentResources `json:"resources"`
 }
 
 type PersistentResources struct {
-	Requests PersistentResourceRequest `yaml:"requests"`
-	Limits   PersistentResourceLimit   `yaml:"limits"`
+	Requests PersistentResourceRequest `json:"requests"`
+	//Limits   PersistentResourceLimit   `yaml:"limits"`
 }
 
 type PersistentResourceRequest struct {
-	Storage string `yaml:"storage"`
+	Storage string `json:"storage"`
 }
 
-type PersistentResourceLimit struct {
-	Storage string `yaml:"storage"`
-}
+//type PersistentResourceLimit struct {
+//	Storage string `yaml:"storage"`
+//}
 
 type PodConfig struct {
-	ServiceAccountName string       `yaml:"serviceAccountName"`
-	Resources          PodResources `yaml:"resources"`
+	ServiceAccountName string       `json:"serviceAccountName"`
+	Resources          PodResources `json:"resources"`
 }
 
 type PodResources struct {
-	Requests PodResourceRequest `yaml:"requests"`
-	Limits   PodResourceLimit   `yaml:"limits"`
+	Requests PodResourceRequest `json:"requests"`
+	Limits   PodResourceLimit   `json:"limits"`
 }
 
 type PodResourceRequest struct {
-	CPU    string `yaml:"cpu"`
-	Memory string `yaml:"memory"`
+	CPU    string `json:"cpu"`
+	Memory string `json:"memory"`
 }
 
 type PodResourceLimit struct {
-	CPU    string `yaml:"cpu"`
-	Memory string `yaml:"memory"`
+	CPU    string `json:"cpu"`
+	Memory string `json:"memory"`
 }
 
 func DefaultConfig() *ZKClusterConfig {
@@ -222,7 +222,7 @@ func DefaultCR(clusterName string) *ZKClusterCR {
 					StorageClassName: "cloud-nfs",
 					Resources: PersistentResources{
 						Requests: PersistentResourceRequest{Storage: "20Gi"},
-						Limits:   PersistentResourceLimit{},
+						//Limits:   PersistentResourceLimit{},
 					},
 				},
 			},
@@ -233,7 +233,10 @@ func DefaultCR(clusterName string) *ZKClusterCR {
 						CPU:    "200m",
 						Memory: "256Mi",
 					},
-					Limits: PodResourceLimit{},
+					Limits: PodResourceLimit{
+						CPU:    "200m",
+						Memory: "256Mi",
+					},
 				},
 			},
 			Config: DefaultConfig().Config,
