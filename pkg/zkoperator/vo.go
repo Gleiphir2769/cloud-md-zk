@@ -122,7 +122,7 @@ type ZKClusterCR struct {
 }
 
 type ZKClusterCRMetadata struct {
-	Name string `yaml:"name"`
+	Name string `json:"name"`
 }
 
 type ZKClusterCRSpec struct {
