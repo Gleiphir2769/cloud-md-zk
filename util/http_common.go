@@ -97,7 +97,7 @@ func HTTPRequestWithBody(url string, body interface{}, params map[string]string,
 		return nil, fmt.Errorf(fmt.Sprintf("new request is fail: %v \n", err))
 	}
 
-	req.Header.Set("Content-type", "application/json;charset=utf-8")
+	req.Header.Set("Content-type", "application/json")
 	q := req.URL.Query()
 
 	if params != nil {
