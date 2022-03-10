@@ -42,8 +42,8 @@ func HTTPPost(url string, body interface{}, params map[string]string, headers ma
 	return HTTPRequestWithBody(url, body, params, headers, http.MethodPost)
 }
 
-func HTTPPut(url string, body interface{}, params map[string]string, headers map[string]string) (*http.Response, error) {
-	return HTTPRequestWithBody(url, body, params, headers, http.MethodPut)
+func HTTPPatch(url string, body interface{}, params map[string]string, headers map[string]string) (*http.Response, error) {
+	return HTTPRequestWithBody(url, body, params, headers, http.MethodPatch)
 }
 
 func HTTPRequestWithoutBody(uri string, params map[string]string, headers map[string]string, auth *Auth, method string) (*http.Response, error) {

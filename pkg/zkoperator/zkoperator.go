@@ -11,15 +11,37 @@ import (
 
 const api = "http://localhost:8081/apis/zookeeper.pravega.io/v1beta1/namespaces/default/zookeeperclusters"
 
-type ZKClusterStatus struct {
+func CreateZKCluster(clusterName string, config *ZKClusterConfig) (*ZKClusterPodStatus, error) {
+	cr := MakeCR(clusterName, config)
+	resp, err := util.HTTPPost(api, &cr, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			logger.GetLog().Error(err.Error())
+		}
+	}(resp.Body)
+	buf, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != 201 {
+		return nil, fmt.Errorf("craete zk cluster failed, status code: %d, reason: %s", resp.StatusCode, string(buf))
+	}
+
+	info := &ZKClusterPodStatus{}
+	err = json.Unmarshal(buf, info)
+	if err != nil {
+		return nil, err
+	}
+	return info, nil
 }
 
-func CreateZKCluster(clusterName string, config *ZKClusterConfig) (*ZKClusterStatus, error) {
-
-	return &ZKClusterStatus{}, nil
-}
-
-func CreateDefaultZKCluster(clusterName string) (*ZKClusterPodInfo, error) {
+func CreateDefaultZKCluster(clusterName string) (*ZKClusterPodStatus, error) {
 	cr := DefaultCR(clusterName)
 	resp, err := util.HTTPPost(api, &cr, nil, nil)
 	if err != nil {
@@ -37,11 +59,11 @@ func CreateDefaultZKCluster(clusterName string) (*ZKClusterPodInfo, error) {
 		return nil, err
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != 201 {
 		return nil, fmt.Errorf("craete zk cluster failed, status code: %d, reason: %s", resp.StatusCode, string(buf))
 	}
 
-	info := &ZKClusterPodInfo{}
+	info := &ZKClusterPodStatus{}
 	err = json.Unmarshal(buf, info)
 	if err != nil {
 		return nil, err
@@ -64,7 +86,7 @@ func DeleteZKCluster(clusterName string) error {
 	return fmt.Errorf("delete zk cluster failed, status code: %d, reason: %s", resp.StatusCode, string(buf))
 }
 
-func GetZKClusterInfo(clusterName string) (*ZKClusterPodInfo, error) {
+func GetZKClusterInfo(clusterName string) (*ZKClusterPodStatus, error) {
 	resp, err := util.HTTPGet(urlJoin(api, clusterName), nil, nil)
 	if err != nil {
 		return nil, err
@@ -79,7 +101,7 @@ func GetZKClusterInfo(clusterName string) (*ZKClusterPodInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	info := &ZKClusterPodInfo{}
+	info := &ZKClusterPodStatus{}
 	err = json.Unmarshal(buf, info)
 	if err != nil {
 		return nil, err
@@ -87,8 +109,34 @@ func GetZKClusterInfo(clusterName string) (*ZKClusterPodInfo, error) {
 	return info, nil
 }
 
-func UpdateZKCluster(clusterName string, config *ZKClusterConfig) (*ZKClusterStatus, error) {
-	return &ZKClusterStatus{}, nil
+func UpdateZKCluster(clusterName string, config *ZKClusterConfig) (*ZKClusterPodStatus, error) {
+	patches := MakePatches(config)
+	resp, err := util.HTTPPatch(urlJoin(api, clusterName), &patches, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func(Body io.ReadCloser) {
+		err = Body.Close()
+		if err != nil {
+			logger.GetLog().Error(err.Error())
+		}
+	}(resp.Body)
+	buf, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != 201 {
+		return nil, fmt.Errorf("craete zk cluster failed, status code: %d, reason: %s", resp.StatusCode, string(buf))
+	}
+
+	info := &ZKClusterPodStatus{}
+	err = json.Unmarshal(buf, info)
+	if err != nil {
+		return nil, err
+	}
+	return info, nil
 }
 
 func urlJoin(segments ...string) (result string) {

@@ -16,15 +16,24 @@ import (
 //	fmt.Println(urlJoin("http://www.baidu.com", "shenjiaqi", "test"))
 //}
 
-func TestCreateDefaultZKCluster(t *testing.T) {
-	info, err := CreateDefaultZKCluster("zookeeper-test")
+//func TestCreateDefaultZKCluster(t *testing.T) {
+//	info, err := CreateDefaultZKCluster("zookeeper-test")
+//	if err != nil {
+//		t.Error(err)
+//	} else {
+//		fmt.Println(info.Spec.Config)
+//	}
+//	//buf, _ := json.Marshal(DefaultCR("zookeeper-test"))
+//	//fmt.Println(string(buf))
+//}
+
+func TestMakePatches(t *testing.T) {
+	info, err := UpdateZKCluster("zookeeper-test", TestConfig())
 	if err != nil {
 		t.Error(err)
 	} else {
 		fmt.Println(info.Spec.Config)
 	}
-	//buf, _ := json.Marshal(DefaultCR("zookeeper-test"))
-	//fmt.Println(string(buf))
 }
 
 //func TestDeleteZKCluster(t *testing.T) {

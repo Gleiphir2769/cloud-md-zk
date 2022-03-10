@@ -1,6 +1,10 @@
 package zkoperator
 
-import "time"
+import (
+	"fmt"
+	"github.com/fatih/structs"
+	"time"
+)
 
 type ZKClusterConfig struct {
 	Size   int                `json:"size"`
@@ -26,7 +30,7 @@ type ZKClusterSubConfig struct {
 	TickTime                 int `json:"tickTime"`
 }
 
-type ZKClusterPodInfo struct {
+type ZKClusterPodStatus struct {
 	APIVersion string `json:"apiVersion"`
 	Kind       string `json:"kind"`
 	Metadata   struct {
@@ -159,7 +163,7 @@ type PersistentResourceRequest struct {
 }
 
 //type PersistentResourceLimit struct {
-//	Storage string `yaml:"storage"`
+//	Storage string `json:"storage"`
 //}
 
 type PodConfig struct {
@@ -204,6 +208,42 @@ func DefaultConfig() *ZKClusterConfig {
 	}
 }
 
+// TestConfig only use for update test
+func TestConfig() *ZKClusterConfig {
+	return &ZKClusterConfig{
+		Size:   5,
+		CPU:    "",
+		Memory: "",
+		Volume: "",
+		Config: ZKClusterSubConfig{1,
+			4,
+			600,
+			1100,
+			0,
+			0,
+			41000,
+			0,
+			0,
+			0,
+			0,
+			0,
+			2100},
+	}
+}
+
+func MakeCR(clusterName string, config *ZKClusterConfig) *ZKClusterCR {
+	cr := DefaultCR(clusterName)
+	cr.Spec.Replicas = config.Size
+	cr.Spec.Pod.Resources.Requests.CPU = config.CPU
+	cr.Spec.Pod.Resources.Requests.Memory = config.Memory
+	cr.Spec.Pod.Resources.Limits.CPU = config.CPU
+	cr.Spec.Pod.Resources.Limits.Memory = config.Memory
+	cr.Spec.Persistence.Spec.Resources.Requests.Storage = config.Volume
+	cr.Spec.Config = config.Config
+
+	return cr
+}
+
 func DefaultCR(clusterName string) *ZKClusterCR {
 	return &ZKClusterCR{
 		APIVersion: "zookeeper.pravega.io/v1beta1",
@@ -241,5 +281,232 @@ func DefaultCR(clusterName string) *ZKClusterCR {
 			},
 			Config: DefaultConfig().Config,
 		},
+	}
+}
+
+type ZKPatch struct {
+	Op    string      `json:"op"`
+	Path  string      `json:"path"`
+	Value interface{} `json:"value"`
+}
+
+type ZKPatches []*ZKPatch
+
+func (zkp *ZKPatches) Display() {
+	for _, patch := range *zkp {
+		fmt.Println(patch)
+	}
+}
+
+func MakePatches(config *ZKClusterConfig) ZKPatches {
+	patches := make([]*ZKPatch, 0)
+	configMap := structs.Map(config)
+
+	for k, v := range configMap {
+		if k == "Config" {
+			continue
+		}
+		if _, ok := v.(string); ok && len(v.(string)) != 0 {
+			patches = append(patches, selectPatch(k, v)...)
+			continue
+		}
+		if _, ok := v.(int); ok && v.(int) != 0 {
+			patches = append(patches, selectPatch(k, v)...)
+		}
+	}
+
+	for k, v := range structs.Map(config.Config) {
+		if _, ok := v.(int); ok && v.(int) != 0 {
+			patches = append(patches, selectPatch(k, v)...)
+			continue
+		}
+		if _, ok := v.(string); ok && len(v.(string)) != 0 {
+			patches = append(patches, selectPatch(k, v)...)
+		}
+	}
+
+	return patches
+}
+
+func selectPatch(key string, value interface{}) []*ZKPatch {
+	switch key {
+	case "Size":
+		return []*ZKPatch{ReplicasPatch(value)}
+	case "CPU":
+		return []*ZKPatch{CPURequestPatch(value), CPULimitPatch(value)}
+	case "Memory":
+		return []*ZKPatch{MemRequestPatch(value), MemLimitPatchPatch(value)}
+	case "AutoPurgePurgeInterval":
+		return []*ZKPatch{AutoPurgePurgeIntervalPatch(value)}
+	case "AutoPurgeSnapRetainCount":
+		return []*ZKPatch{AutoPurgeSnapRetainCountPatch(value)}
+	case "CommitLogCount":
+		return []*ZKPatch{CommitLogCountPatch(value)}
+	case "GlobalOutstandingLimit":
+		return []*ZKPatch{GlobalOutstandingLimitPatch(value)}
+	case "InitLimit":
+		return []*ZKPatch{InitLimitPatch(value)}
+	case "MaxClientCnxns":
+		return []*ZKPatch{MaxClientCnxnsPatch(value)}
+	case "MaxSessionTimeout":
+		return []*ZKPatch{MaxSessionTimeout(value)}
+	case "MinSessionTimeout":
+		return []*ZKPatch{MinSessionTimeoutPatch(value)}
+	case "PreAllocSize":
+		return []*ZKPatch{PreAllocSizePatch(value)}
+	case "SnapCount":
+		return []*ZKPatch{SnapCountPatch(value)}
+	case "SnapSizeLimitInKb":
+		return []*ZKPatch{SnapSizeLimitInKbPatch(value)}
+	case "SyncLimit":
+		return []*ZKPatch{SyncLimitPatch(value)}
+	case "TickTime":
+		return []*ZKPatch{TickTimePatch(value)}
+	default:
+		return []*ZKPatch{}
+	}
+}
+
+func CPURequestPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/pod/resources/requests/cpu",
+		Value: value,
+	}
+}
+
+func CPULimitPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/pod/resources/limits/cpu",
+		Value: value,
+	}
+}
+
+func MemRequestPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/pod/resources/requests/memory",
+		Value: value,
+	}
+}
+
+func MemLimitPatchPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/pod/resources/limits/memory",
+		Value: value,
+	}
+}
+
+func ReplicasPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/replicas",
+		Value: value,
+	}
+}
+
+func AutoPurgePurgeIntervalPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/autoPurgePurgeInterval",
+		Value: value,
+	}
+}
+
+func AutoPurgeSnapRetainCountPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/autoPurgeSnapRetainCount",
+		Value: value,
+	}
+}
+
+func CommitLogCountPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/commitLogCount",
+		Value: value,
+	}
+}
+
+func GlobalOutstandingLimitPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/globalOutstandingLimit",
+		Value: value,
+	}
+}
+
+func InitLimitPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/initLimit",
+		Value: value,
+	}
+}
+
+func MaxClientCnxnsPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/maxClientCnxns",
+		Value: value,
+	}
+}
+
+func MaxSessionTimeout(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/maxSessionTimeout",
+		Value: value,
+	}
+}
+
+func MinSessionTimeoutPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/minSessionTimeout",
+		Value: value,
+	}
+}
+
+func PreAllocSizePatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/preAllocSize",
+		Value: value,
+	}
+}
+
+func SnapCountPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/snapCount",
+		Value: value,
+	}
+}
+
+func SnapSizeLimitInKbPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/snapSizeLimitInKb",
+		Value: value,
+	}
+}
+
+func SyncLimitPatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/syncLimit",
+		Value: value,
+	}
+}
+
+func TickTimePatch(value interface{}) *ZKPatch {
+	return &ZKPatch{
+		Op:    "replace",
+		Path:  "/spec/config/tickTime",
+		Value: value,
 	}
 }
