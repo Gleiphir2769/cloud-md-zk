@@ -141,6 +141,8 @@ type ZKClusterCRSpec struct {
 type ImageConfig struct {
 	Repository string `json:"repository"`
 	Tag        string `json:"tag"`
+	// todo: wait to test
+	PullPolicy string `json:"pullPolicy"`
 }
 
 type PersistentConfig struct {
@@ -254,6 +256,7 @@ func DefaultCR(clusterName string) *ZKClusterCR {
 			Image: ImageConfig{
 				Repository: "pravega/zookeeper",
 				Tag:        "0.2.13",
+				PullPolicy: "IfNotPresent",
 			},
 			StorageType: "persistence",
 			Persistence: PersistentConfig{

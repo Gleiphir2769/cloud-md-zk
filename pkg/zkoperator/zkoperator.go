@@ -127,7 +127,7 @@ func UpdateZKCluster(clusterName string, config *ZKClusterConfig) (*ZKClusterPod
 		return nil, err
 	}
 
-	if resp.StatusCode != 201 {
+	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("craete zk cluster failed, status code: %d, reason: %s", resp.StatusCode, string(buf))
 	}
 
